@@ -2,8 +2,14 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
+// Get the repository name for GitHub Pages
+const base = process.env.NODE_ENV === 'production'
+  ? '/carSuggestion/' // Replace with your repository name
+  : '/'
+
 export default defineConfig({
   plugins: [vue()],
+  base: base, // Set the base URL
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')

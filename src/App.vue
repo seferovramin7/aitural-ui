@@ -110,6 +110,53 @@ export default {
         
         console.log('Sending request to backend:', userQuery);
         
+        // Check if we're running on GitHub Pages
+        const isGitHubPages = window.location.hostname.includes('github.io');
+        
+        if (isGitHubPages) {
+          // In GitHub Pages environment, use mock data for demo
+          console.log('Running on GitHub Pages, using demo data');
+          
+          // Simulate API delay
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          
+          // Remove loading message
+          this.messages.pop();
+          
+          // Add bot response with sample cars
+          this.messages.push({
+            type: 'bot',
+            cars: [
+              {
+                make: 'Toyota',
+                model: 'Camry',
+                year: 2022,
+                price: 25000,
+                imageUrl: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+                features: ['Fuel efficient', 'Reliable', 'Comfortable']
+              },
+              {
+                make: 'Honda',
+                model: 'Accord',
+                year: 2021,
+                price: 24000,
+                imageUrl: 'https://images.unsplash.com/photo-1522037576655-7a93ce0f4d10?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+                features: ['Safety features', 'Sporty design', 'Hybrid option']
+              },
+              {
+                make: 'Tesla',
+                model: 'Model 3',
+                year: 2023,
+                price: 45000,
+                imageUrl: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+                features: ['Electric', 'Autopilot', 'Long range']
+              }
+            ]
+          });
+          return;
+        }
+        
+        // If not on GitHub Pages, proceed with real API calls
         // Try with proxy URL first
         try {
           const response = await customAxios.post('/api/cars/suggestion', {
