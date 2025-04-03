@@ -4,7 +4,7 @@ import path from 'path'
 
 // Get the repository name for GitHub Pages
 const base = process.env.NODE_ENV === 'production'
-  ? '/carSuggestion/' // Replace with your repository name
+  ? '/aitural-ui/' // Corrected repository name
   : '/'
 
 export default defineConfig({
