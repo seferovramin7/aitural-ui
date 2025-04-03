@@ -177,7 +177,7 @@ export default {
           console.error('Proxy API error:', proxyError);
           
           // Try with direct URL as fallback
-          const directResponse = await customAxios.post('http://localhost:8080/api/cars/suggestion', {
+          const directResponse = await customAxios.post('http://52.90.3.212:8080/api/cars/suggestion', {
             text: userQuery
           });
           

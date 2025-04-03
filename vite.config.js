@@ -19,7 +19,8 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '127.0.0.1',
-      '.ngrok-free.app'
+      '.ngrok-free.app',
+      '52.90.3.212'
     ],
     port: 3000,
     proxy: {
