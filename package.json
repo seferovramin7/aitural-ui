@@ -1,0 +1,20 @@
+{
+  "name": "car-suggestion-ui",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "vue": "^3.3.4",
+    "axios": "^1.5.0",
+    "swiper": "^10.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.3.4",
+    "vite": "^4.4.9"
+  }
+} 
