@@ -48,6 +48,13 @@
                   <span class="info-label">Engine:</span>
                   <span class="info-value">{{ car.engine_volume }} cc</span>
                 </div>
+                <div class="info-row">
+                  <span class="info-label">Source:</span>
+                  <span class="info-value">
+                    <span v-if="getSourceLabel(car.link || car.url)" class="source-label">{{ getSourceLabel(car.link || car.url) }}</span>
+                    <span v-else>Other</span>
+                  </span>
+                </div>
               </div>
               <a :href="car.link || car.url" target="_blank" class="view-btn">View Car</a>
             </div>
@@ -82,6 +89,19 @@ export default {
       if (this.currentIndex > 0) {
         this.currentIndex--;
       }
+    },
+    getSourceLabel(url) {
+      if (!url) return null;
+      
+      if (url.includes('avtostop.tv')) {
+        return 'AvtoStop';
+      } else if (url.includes('turbo.az')) {
+        return 'Turbo.az';
+      } else if (url.includes('ap.ge')) {
+        return 'AutoPapa';
+      }
+      
+      return null;
     }
   }
 };
@@ -98,13 +118,15 @@ export default {
   align-items: center;
   margin-bottom: 1rem;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .carousel-header h3 {
   margin: 0;
-  font-size: 1.1rem;
-  color: var(--primary-color);
+  font-size: 1rem;
+  color: var(--text-color);
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .carousel-controls {
@@ -114,39 +136,47 @@ export default {
 }
 
 .control-btn {
-  background-color: var(--secondary-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.9rem;
-  transition: all 0.2s;
+  background-color: var(--user-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+  transition: var(--transition-smooth);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .control-btn:hover:not(:disabled) {
-  background-color: var(--primary-color);
+  background-color: rgba(64, 65, 79, 0.9);
   color: white;
-  border-color: var(--primary-color);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .control-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .pagination {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--light-text-color);
+  padding: 0 0.25rem;
 }
 
 .carousel-container {
   width: 100%;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .carousel-track {
   display: flex;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   width: 100%;
 }
 
@@ -158,31 +188,35 @@ export default {
 .car-card {
   display: flex;
   flex-direction: column;
-  background-color: white;
-  border-radius: 8px;
+  background-color: rgba(32, 33, 35, 0.5);
+  border-radius: 0.375rem;
   overflow: hidden;
   height: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 @media (min-width: 768px) {
   .car-card {
     flex-direction: row;
+    min-height: 180px;
+    max-height: 240px;
   }
 }
 
 .car-image {
   width: 100%;
-  height: 200px;
+  height: 140px;
   overflow: hidden;
   position: relative;
-  background-color: #f0f0f0;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 @media (min-width: 768px) {
   .car-image {
-    width: 40%;
+    width: 30%;
     height: auto;
+    max-height: 240px;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
   }
 }
 
@@ -190,6 +224,11 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.car-image:hover img {
+  transform: scale(1.05);
 }
 
 .no-image {
@@ -199,54 +238,95 @@ export default {
   height: 100%;
   color: var(--light-text-color);
   font-style: italic;
+  opacity: 0.7;
 }
 
 .car-details {
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.car-details::-webkit-scrollbar {
+  width: 4px;
+}
+
+.car-details::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.car-details::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 .car-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
   color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .car-info {
   flex: 1;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  overflow-y: auto;
 }
 
 .info-row {
   display: flex;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.825rem;
+  align-items: center;
 }
 
 .info-label {
-  font-weight: 600;
-  width: 80px;
+  font-weight: 500;
+  width: 70px;
   color: var(--light-text-color);
 }
 
 .info-value {
   flex: 1;
+  color: var(--text-color);
 }
 
 .view-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--primary-color);
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.375rem;
   text-align: center;
-  transition: background-color 0.3s;
+  transition: var(--transition-smooth);
   align-self: flex-start;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .view-btn:hover {
-  background-color: #0d8c6d;
+  background-color: #0e916f;
+}
+
+.source-label {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--light-text-color);
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: 0.25rem;
 }
 </style> 
