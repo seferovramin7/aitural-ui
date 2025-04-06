@@ -14,7 +14,9 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
-# Build the application
+# Build the application with correct base URL for Digital Ocean
+ENV NODE_ENV=production
+ENV DEPLOY_ENV=DIGITAL_OCEAN
 RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Production stage

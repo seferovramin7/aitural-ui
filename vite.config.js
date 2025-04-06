@@ -3,10 +3,10 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import { fileURLToPath, URL } from 'node:url';
 
-// Get the repository name for GitHub Pages
-const base = process.env.NODE_ENV === 'production'
-  ? '/aitural-ui/' // Corrected repository name
-  : '/'
+// Get the base path based on environment
+const base = process.env.DEPLOY_ENV === 'GH_PAGES' 
+  ? '/aitural-ui/' // For GitHub Pages
+  : '/' // For Digital Ocean and local development
 
 export default defineConfig({
   plugins: [vue()],
