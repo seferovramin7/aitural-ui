@@ -2,6 +2,9 @@ FROM node:18-alpine as build-stage
 
 WORKDIR /app
 
+# Install gcompat for esbuild compatibility on Alpine
+RUN apk add --no-cache gcompat
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
