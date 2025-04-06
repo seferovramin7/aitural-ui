@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import { fileURLToPath, URL } from 'node:url';
 
 // Get the repository name for GitHub Pages
 const base = process.env.NODE_ENV === 'production'
@@ -12,7 +13,7 @@ export default defineConfig({
   base: base, // Set the base URL
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
   server: {
