@@ -25,7 +25,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://52.90.3.212:8080',
+        target: 'https://d04f-46-32-172-198.ngrok-free.app',
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
@@ -44,6 +44,7 @@ export default defineConfig({
             // Set only the headers we need
             proxyReq.setHeader('Content-Type', 'application/json');
             proxyReq.setHeader('Accept', 'application/json');
+            proxyReq.setHeader('X-Chat-Id', '8dace3c3-4973-43c8-991e-23682d5341323682s53413 3');
             
             console.log('Sending Request to the Target:', req.method, req.url);
           });
