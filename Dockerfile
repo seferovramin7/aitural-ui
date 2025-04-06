@@ -4,6 +4,9 @@ FROM node:18-alpine as build-stage
 # Set working directory
 WORKDIR /app
 
+# Install dependencies required for esbuild
+RUN apk add --no-cache python3 make g++
+
 # Copy package files and install dependencies
 COPY package*.json ./
 RUN npm ci
@@ -12,7 +15,7 @@ RUN npm ci
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Production stage
 FROM nginx:stable-alpine as production-stage
