@@ -97,7 +97,8 @@ export default {
         // Set only the headers we need
         config.headers = {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-Chat-Id': '8dace3c3-4973-43c8-991e-23682d5341323682s53413 3' // Use exact same ID as successful curl
         };
         return config;
       });
@@ -163,7 +164,13 @@ export default {
             text: userQuery
           });
           
-          console.log('Received response from backend:', response.data);
+          console.log('Received response from backend:', {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+            data: JSON.stringify(response.data, null, 2),
+            timestamp: new Date().toISOString()
+          });
           
           // Remove loading message
           this.messages.pop();
@@ -175,22 +182,91 @@ export default {
           });
         } catch (proxyError) {
           console.error('Proxy API error:', proxyError);
+          if (proxyError.response) {
+            console.error('Response data:', proxyError.response.data);
+            console.error('Response status:', proxyError.response.status);
+            console.error('Response headers:', proxyError.response.headers);
+          } else if (proxyError.request) {
+            console.error('No response received:', proxyError.request);
+          } else {
+            console.error('Error setting up request:', proxyError.message);
+          }
           
-          // Try with direct URL as fallback
-          const directResponse = await customAxios.post('http://localhost:8080/api/cars/suggestion', {
-            text: userQuery
-          });
-          
-          console.log('Direct API response:', directResponse.data);
-          
-          // Remove loading message
-          this.messages.pop();
-          
-          // Add bot response with cars
-          this.messages.push({
-            type: 'bot',
-            cars: directResponse.data
-          });
+          try {
+            // Try with direct URL as fallback
+            const directResponse = await customAxios.post('http://52.90.3.212:8080/api/cars/suggestion', {
+              text: userQuery
+            });
+            
+            console.log('Direct API response:', {
+              status: directResponse.status,
+              statusText: directResponse.statusText,
+              headers: directResponse.headers,
+              data: JSON.stringify(directResponse.data, null, 2),
+              timestamp: new Date().toISOString()
+            });
+            
+            // Remove loading message
+            this.messages.pop();
+            
+            // Add bot response with cars
+            this.messages.push({
+              type: 'bot',
+              cars: directResponse.data
+            });
+          } catch (directError) {
+            console.error('Direct API error:', directError);
+            if (directError.response) {
+              console.error('Response data:', directError.response.data);
+              console.error('Response status:', directError.response.status);
+              console.error('Response headers:', directError.response.headers);
+            } else if (directError.request) {
+              console.error('No response received:', directError.request);
+            } else {
+              console.error('Error setting up request:', directError.message);
+            }
+            
+            // Try with native fetch as a last resort
+            try {
+              console.log('Attempting with native fetch API');
+              const fetchResponse = await fetch('http://52.90.3.212:8080/api/cars/suggestion', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'omit',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Chat-Id': '8dace3c3-4973-43c8-991e-23682d5341323682s53413 3'
+                },
+                body: JSON.stringify({
+                  text: userQuery
+                })
+              });
+              
+              if (!fetchResponse.ok) {
+                throw new Error(`Fetch failed with status: ${fetchResponse.status}`);
+              }
+              
+              const fetchData = await fetchResponse.json();
+              console.log('Fetch API response:', {
+                status: fetchResponse.status,
+                statusText: fetchResponse.statusText,
+                data: JSON.stringify(fetchData, null, 2),
+                timestamp: new Date().toISOString()
+              });
+              
+              // Remove loading message
+              this.messages.pop();
+              
+              // Add bot response with cars
+              this.messages.push({
+                type: 'bot',
+                cars: fetchData
+              });
+            } catch (fetchError) {
+              console.error('Fetch API error:', fetchError);
+              throw fetchError; // Rethrow to be caught by the outer catch
+            }
+          }
         }
       } catch (error) {
         console.error('Error fetching car suggestions:', error);
@@ -211,6 +287,11 @@ export default {
           this.scrollToBottom();
         });
       }
+    },
+    generateChatId() {
+      // Generate a random chat ID similar to the one used in curl
+      const randomPart = Math.random().toString(36).substring(2, 15);
+      return `8dace3c3-4973-43c8-991e-${randomPart}`;
     },
     scrollToBottom() {
       if (this.$refs.chatMessages) {
