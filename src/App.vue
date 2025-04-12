@@ -45,7 +45,7 @@
                   <input 
                     type="text" 
                     v-model="userInput" 
-                    placeholder="Describe your car requirements..." 
+                    placeholder="İstədiyiniz maşın barədə yazın"
                     :disabled="loading"
                   />
                   <button type="submit" class="send-button" :disabled="loading || !userInput.trim()">

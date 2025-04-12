@@ -1,14 +1,14 @@
 <template>
   <div class="car-carousel">
     <div class="carousel-header">
-      <h3>Found {{ cars.length }} car suggestions</h3>
+      <h3>Bu {{ cars.length }} maşın gözləntilərinizə uyğundur</h3>
       <div class="carousel-controls">
         <button @click="prevSlide" :disabled="currentIndex === 0" class="control-btn">
-          ← Previous
+          ← Əvvəlki
         </button>
         <span class="pagination">{{ currentIndex + 1 }} / {{ cars.length }}</span>
         <button @click="nextSlide" :disabled="currentIndex === cars.length - 1" class="control-btn">
-          Next →
+          Sonraki →
         </button>
       </div>
     </div>
@@ -56,7 +56,7 @@
                   </span>
                 </div>
               </div>
-              <a :href="car.link || car.url" target="_blank" class="view-btn">View Car</a>
+              <a :href="car.link || car.url" target="_blank" class="view-btn">Maşına bax</a>
             </div>
           </div>
         </div>
