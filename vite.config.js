@@ -1,18 +1,19 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import { fileURLToPath, URL } from 'node:url';
 
-// Get the repository name for GitHub Pages
-const base = process.env.NODE_ENV === 'production'
-  ? '/aitural-ui/' // Corrected repository name
-  : '/'
+// Get the base path based on environment
+const base = process.env.DEPLOY_ENV === 'GH_PAGES' 
+  ? '/aitural-ui/' // For GitHub Pages
+  : '/' // For Digital Ocean and local development
 
 export default defineConfig({
   plugins: [vue()],
   base: base, // Set the base URL
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
   server: {
@@ -25,7 +26,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://d04f-46-32-172-198.ngrok-free.app',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
