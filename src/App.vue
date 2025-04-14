@@ -141,36 +141,56 @@ export default {
           // Remove loading message
           this.messages.pop();
           
-          // Add bot response with sample cars
-          this.messages.push({
-            type: 'bot',
-            cars: [
-              {
-                make: 'Toyota',
-                model: 'Camry',
-                year: 2022,
-                price: 25000,
-                imageUrl: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-                features: ['Fuel efficient', 'Reliable', 'Comfortable']
-              },
-              {
-                make: 'Honda',
-                model: 'Accord',
-                year: 2021,
-                price: 24000,
-                imageUrl: 'https://images.unsplash.com/photo-1522037576655-7a93ce0f4d10?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-                features: ['Safety features', 'Sporty design', 'Hybrid option']
-              },
-              {
-                make: 'Tesla',
-                model: 'Model 3',
-                year: 2023,
-                price: 45000,
-                imageUrl: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
-                features: ['Electric', 'Autopilot', 'Long range']
-              }
-            ]
-          });
+          // Randomly alternate between car list and text response for demo purposes
+          const showTextResponse = Math.random() > 0.5;
+          
+          if (showTextResponse) {
+            // Add bot text response example
+            this.messages.push({
+              type: 'bot',
+              text: 'Based on your requirements, I recommend looking at mid-size sedans like Toyota Camry, Honda Accord, or Mazda 6. These cars offer good fuel efficiency, reliability, and are within the average budget range. Would you like more specific details about any of these options?'
+            });
+          } else {
+            // Add bot response with sample cars
+            this.messages.push({
+              type: 'bot',
+              cars: [
+                {
+                  title: 'Toyota Camry',
+                  year: 2022,
+                  price: '$25,000',
+                  details: 'Sedan with excellent reliability record',
+                  mileage: '0',
+                  engine_volume: '2500',
+                  location_date: 'Bakı',
+                  image_url: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+                  url: '#'
+                },
+                {
+                  title: 'Honda Accord',
+                  year: 2021,
+                  price: '$24,000',
+                  details: 'Sporty sedan with great handling',
+                  mileage: '5000',
+                  engine_volume: '2000',
+                  location_date: 'Bakı',
+                  image_url: 'https://images.unsplash.com/photo-1522037576655-7a93ce0f4d10?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+                  url: '#'
+                },
+                {
+                  title: 'Tesla Model 3',
+                  year: 2023,
+                  price: '$45,000',
+                  details: 'Electric sedan with cutting-edge tech',
+                  mileage: '1000',
+                  engine_volume: 'Electric',
+                  location_date: 'Bakı',
+                  image_url: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80',
+                  url: '#'
+                }
+              ]
+            });
+          }
           return;
         }
         
@@ -192,11 +212,39 @@ export default {
           // Remove loading message
           this.messages.pop();
           
-          // Add bot response with cars
-          this.messages.push({
-            type: 'bot',
-            cars: response.data
-          });
+          // Check response type and add appropriate bot response
+          if (Array.isArray(response.data)) {
+            // Response is an array of cars
+            this.messages.push({
+              type: 'bot',
+              cars: response.data
+            });
+          } else if (typeof response.data === 'string') {
+            // Response is a text message
+            this.messages.push({
+              type: 'bot',
+              text: response.data
+            });
+          } else if (response.data && response.data.body) {
+            // Response might be wrapped in an object with 'body' property
+            if (Array.isArray(response.data.body)) {
+              this.messages.push({
+                type: 'bot',
+                cars: response.data.body
+              });
+            } else {
+              this.messages.push({
+                type: 'bot',
+                text: response.data.body.toString()
+              });
+            }
+          } else {
+            // Fallback for unexpected response format
+            this.messages.push({
+              type: 'bot',
+              text: 'Sorry, I couldn\'t process the response from the server.'
+            });
+          }
         } catch (proxyError) {
           console.error('Proxy API error:', proxyError);
           if (proxyError.response) {
@@ -226,11 +274,39 @@ export default {
             // Remove loading message
             this.messages.pop();
             
-            // Add bot response with cars
-            this.messages.push({
-              type: 'bot',
-              cars: directResponse.data
-            });
+            // Check response type and add appropriate bot response
+            if (Array.isArray(directResponse.data)) {
+              // Response is an array of cars
+              this.messages.push({
+                type: 'bot',
+                cars: directResponse.data
+              });
+            } else if (typeof directResponse.data === 'string') {
+              // Response is a text message
+              this.messages.push({
+                type: 'bot',
+                text: directResponse.data
+              });
+            } else if (directResponse.data && directResponse.data.body) {
+              // Response might be wrapped in an object with 'body' property
+              if (Array.isArray(directResponse.data.body)) {
+                this.messages.push({
+                  type: 'bot',
+                  cars: directResponse.data.body
+                });
+              } else {
+                this.messages.push({
+                  type: 'bot',
+                  text: directResponse.data.body.toString()
+                });
+              }
+            } else {
+              // Fallback for unexpected response format
+              this.messages.push({
+                type: 'bot',
+                text: 'Sorry, I couldn\'t process the response from the server.'
+              });
+            }
           } catch (directError) {
             console.error('Direct API error:', directError);
             if (directError.response) {
@@ -274,11 +350,39 @@ export default {
               // Remove loading message
               this.messages.pop();
               
-              // Add bot response with cars
-              this.messages.push({
-                type: 'bot',
-                cars: fetchData
-              });
+              // Check response type and add appropriate bot response
+              if (Array.isArray(fetchData)) {
+                // Response is an array of cars
+                this.messages.push({
+                  type: 'bot',
+                  cars: fetchData
+                });
+              } else if (typeof fetchData === 'string') {
+                // Response is a text message
+                this.messages.push({
+                  type: 'bot',
+                  text: fetchData
+                });
+              } else if (fetchData && fetchData.body) {
+                // Response might be wrapped in an object with 'body' property
+                if (Array.isArray(fetchData.body)) {
+                  this.messages.push({
+                    type: 'bot',
+                    cars: fetchData.body
+                  });
+                } else {
+                  this.messages.push({
+                    type: 'bot',
+                    text: fetchData.body.toString()
+                  });
+                }
+              } else {
+                // Fallback for unexpected response format
+                this.messages.push({
+                  type: 'bot',
+                  text: 'Sorry, I couldn\'t process the response from the server.'
+                });
+              }
             } catch (fetchError) {
               console.error('Fetch API error:', fetchError);
               throw fetchError; // Rethrow to be caught by the outer catch
