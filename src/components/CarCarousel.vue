@@ -1,7 +1,7 @@
 <template>
   <div class="car-carousel">
     <div class="carousel-header">
-      <h3>Bu {{ cars.length }} maşın gözləntilərinizə uyğundur</h3>
+      <h3>{{ aiMessage || `Bu ${cars.length} maşın gözləntilərinizə uyğundur` }}</h3>
       <div class="carousel-controls">
         <button @click="prevSlide" :disabled="currentIndex === 0" class="control-btn">
           ← Əvvəlki
@@ -72,6 +72,10 @@ export default {
     cars: {
       type: Array,
       required: true
+    },
+    aiMessage: {
+      type: String,
+      default: null
     }
   },
   data() {

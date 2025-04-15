@@ -26,7 +26,7 @@
               <div class="message-content">
                 <div v-if="message.type === 'user'" class="message-text">{{ message.text }}</div>
                 <div v-else-if="message.type === 'bot' && message.cars && message.cars.length > 0">
-                  <car-carousel :cars="message.cars" />
+                  <car-carousel :cars="message.cars" :ai-message="message.aiResponse" />
                 </div>
                 <div v-else-if="message.type === 'bot' && message.text" class="message-text">{{ message.text }}</div>
                 <div v-else-if="message.type === 'loading'" class="loading-indicator">
@@ -212,39 +212,8 @@ export default {
           // Remove loading message
           this.messages.pop();
           
-          // Check response type and add appropriate bot response
-          if (Array.isArray(response.data)) {
-            // Response is an array of cars
-            this.messages.push({
-              type: 'bot',
-              cars: response.data
-            });
-          } else if (typeof response.data === 'string') {
-            // Response is a text message
-            this.messages.push({
-              type: 'bot',
-              text: response.data
-            });
-          } else if (response.data && response.data.body) {
-            // Response might be wrapped in an object with 'body' property
-            if (Array.isArray(response.data.body)) {
-              this.messages.push({
-                type: 'bot',
-                cars: response.data.body
-              });
-            } else {
-              this.messages.push({
-                type: 'bot',
-                text: response.data.body.toString()
-              });
-            }
-          } else {
-            // Fallback for unexpected response format
-            this.messages.push({
-              type: 'bot',
-              text: 'Sorry, I couldn\'t process the response from the server.'
-            });
-          }
+          // Process the response
+          this.processApiResponse(response.data);
         } catch (proxyError) {
           console.error('Proxy API error:', proxyError);
           if (proxyError.response) {
@@ -274,39 +243,8 @@ export default {
             // Remove loading message
             this.messages.pop();
             
-            // Check response type and add appropriate bot response
-            if (Array.isArray(directResponse.data)) {
-              // Response is an array of cars
-              this.messages.push({
-                type: 'bot',
-                cars: directResponse.data
-              });
-            } else if (typeof directResponse.data === 'string') {
-              // Response is a text message
-              this.messages.push({
-                type: 'bot',
-                text: directResponse.data
-              });
-            } else if (directResponse.data && directResponse.data.body) {
-              // Response might be wrapped in an object with 'body' property
-              if (Array.isArray(directResponse.data.body)) {
-                this.messages.push({
-                  type: 'bot',
-                  cars: directResponse.data.body
-                });
-              } else {
-                this.messages.push({
-                  type: 'bot',
-                  text: directResponse.data.body.toString()
-                });
-              }
-            } else {
-              // Fallback for unexpected response format
-              this.messages.push({
-                type: 'bot',
-                text: 'Sorry, I couldn\'t process the response from the server.'
-              });
-            }
+            // Process the response
+            this.processApiResponse(directResponse.data);
           } catch (directError) {
             console.error('Direct API error:', directError);
             if (directError.response) {
@@ -350,39 +288,8 @@ export default {
               // Remove loading message
               this.messages.pop();
               
-              // Check response type and add appropriate bot response
-              if (Array.isArray(fetchData)) {
-                // Response is an array of cars
-                this.messages.push({
-                  type: 'bot',
-                  cars: fetchData
-                });
-              } else if (typeof fetchData === 'string') {
-                // Response is a text message
-                this.messages.push({
-                  type: 'bot',
-                  text: fetchData
-                });
-              } else if (fetchData && fetchData.body) {
-                // Response might be wrapped in an object with 'body' property
-                if (Array.isArray(fetchData.body)) {
-                  this.messages.push({
-                    type: 'bot',
-                    cars: fetchData.body
-                  });
-                } else {
-                  this.messages.push({
-                    type: 'bot',
-                    text: fetchData.body.toString()
-                  });
-                }
-              } else {
-                // Fallback for unexpected response format
-                this.messages.push({
-                  type: 'bot',
-                  text: 'Sorry, I couldn\'t process the response from the server.'
-                });
-              }
+              // Process the response
+              this.processApiResponse(fetchData);
             } catch (fetchError) {
               console.error('Fetch API error:', fetchError);
               throw fetchError; // Rethrow to be caught by the outer catch
@@ -406,6 +313,59 @@ export default {
         // Scroll to bottom
         this.$nextTick(() => {
           this.scrollToBottom();
+        });
+      }
+    },
+    processApiResponse(data) {
+      // Extract data based on response structure
+      let responseData = data;
+      
+      // Handle if the response is wrapped in a 'body' property
+      if (data && data.body) {
+        responseData = data.body;
+      }
+      
+      // Find and extract AI text response if present
+      let aiResponse = null;
+      let cars = [];
+      
+      if (Array.isArray(responseData)) {
+        // Filter out the AI response object and collect valid car objects
+        responseData.forEach(item => {
+          if (item && item.aiResponse) {
+            aiResponse = item.aiResponse;
+          } else if (item && (item.title || item.image || item.price)) {
+            cars.push(item);
+          }
+        });
+        
+        // If we have cars to show, add them as a message
+        if (cars.length > 0) {
+          this.messages.push({
+            type: 'bot',
+            cars: cars,
+            aiResponse: aiResponse // Pass AI response along with cars
+          });
+        }
+        
+        // Only add a separate AI message if we don't have cars to display
+        if (aiResponse && cars.length === 0) {
+          this.messages.push({
+            type: 'bot',
+            text: aiResponse
+          });
+        }
+      } else if (typeof responseData === 'string') {
+        // Response is just a text message
+        this.messages.push({
+          type: 'bot',
+          text: responseData
+        });
+      } else {
+        // Fallback for unexpected response format
+        this.messages.push({
+          type: 'bot',
+          text: 'Sorry, I couldn\'t process the response from the server.'
         });
       }
     },
