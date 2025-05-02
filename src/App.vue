@@ -88,7 +88,7 @@ export default {
       userInput: '',
       messages: [],
       loading: false,
-      aituralLogo: '/favicon.ico'
+      aituralLogo: '/icons/aitural.JPG'
     };
   },
   methods: {

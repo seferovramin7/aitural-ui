@@ -28,6 +28,11 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy built files from build stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
+# Explicitly copy favicon and icon folders
+COPY --from=build-stage /app/public/favicon.ico /usr/share/nginx/html/
+COPY --from=build-stage /app/public/icons /usr/share/nginx/html/icons
+COPY --from=build-stage /app/public/images /usr/share/nginx/html/images
+
 # Expose port 80
 EXPOSE 80
 

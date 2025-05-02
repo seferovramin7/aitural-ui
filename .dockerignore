@@ -4,8 +4,8 @@ npm-debug.log
 yarn-debug.log
 yarn-error.log
 
-# Build output
-dist
+# Don't exclude dist since we want to keep it for reference
+# dist
 
 # Git related
 .git

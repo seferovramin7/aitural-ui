@@ -6,7 +6,9 @@ import { fileURLToPath, URL } from 'node:url';
 // Get the base path based on environment
 const base = process.env.DEPLOY_ENV === 'GH_PAGES' 
   ? '/aitural-ui/' // For GitHub Pages
-  : '/' // For Digital Ocean and local development
+  : process.env.DEPLOY_ENV === 'DIGITAL_OCEAN'
+    ? '/' // For Digital Ocean
+    : '/' // For local development
 
 export default defineConfig({
   plugins: [vue()],
