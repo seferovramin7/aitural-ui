@@ -11,7 +11,9 @@
         <div class="chat-container">
           <div class="chat-messages" ref="chatMessages">
             <div v-if="messages.length === 0" class="empty-state">
-              <div class="empty-icon">🚗</div>
+              <div class="empty-icon">
+                <img :src="aituralLogo" alt="AiTural" class="empty-icon-img">
+              </div>
               <h2>Gəlin ehtiyyac və istəklərinizə ən uyğun avtomobili tapaq</h2>
               <p class="empty-description">İstədiyiniz maşın haqqında təsəvvürünüzü yazın və biz sizə ən yaxşı variantları təklif edək.</p>
             </div>
@@ -20,7 +22,8 @@
                  :class="['message', message.type === 'user' ? 'user-message' : 'bot-message']">
               <div class="message-avatar">
                 <div :class="['avatar', message.type === 'user' ? 'user-avatar' : 'bot-avatar']">
-                  {{ message.type === 'user' ? '👤' : '🤖' }}
+                  {{ message.type === 'user' ? '👤' : '' }}
+                  <img v-if="message.type === 'bot'" :src="aituralLogo" alt="AiTural" class="bot-avatar-img">
                 </div>
               </div>
               <div class="message-content">
@@ -84,7 +87,8 @@ export default {
     return {
       userInput: '',
       messages: [],
-      loading: false
+      loading: false,
+      aituralLogo: '/favicon.ico'
     };
   },
   methods: {
@@ -479,7 +483,21 @@ export default {
 }
 
 .bot-avatar {
-  background-color: var(--primary-color);
+  background-color: #000000;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bot-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .user-message {
@@ -622,6 +640,20 @@ export default {
   font-size: 3rem;
   margin-bottom: 1.5rem;
   opacity: 0.8;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+  border-radius: 50%;
+}
+
+.empty-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .empty-state h2 {
