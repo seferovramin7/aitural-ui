@@ -88,8 +88,13 @@ export default {
       userInput: '',
       messages: [],
       loading: false,
-      aituralLogo: '/icons/aitural.JPG'
+      aituralLogo: '/icons/aitural.JPG',
+      chatId: null
     };
+  },
+  created() {
+    // Initialize chatId when the component is created
+    this.chatId = this.generateChatId();
   },
   methods: {
     async sendMessage() {
@@ -119,7 +124,7 @@ export default {
         config.headers = {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Chat-Id': '8dace3c3-4973-43c8-991e-23682d5341323682s53413 3' // Use exact same ID as successful curl
+          'X-Chat-Id': this.chatId
         };
         return config;
       });
@@ -270,7 +275,7 @@ export default {
                 credentials: 'omit',
                 headers: {
                   'Content-Type': 'application/json',
-                  'X-Chat-Id': '8dace3c3-4973-43c8-991e-23682d5341323682s53413 3'
+                  'X-Chat-Id': this.chatId
                 },
                 body: JSON.stringify({
                   text: userQuery
@@ -374,9 +379,12 @@ export default {
       }
     },
     generateChatId() {
-      // Generate a random chat ID similar to the one used in curl
-      const randomPart = Math.random().toString(36).substring(2, 15);
-      return `8dace3c3-4973-43c8-991e-${randomPart}`;
+      // Generate a unique UUID-like chat ID
+      return 'xxxxxxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
     },
     scrollToBottom() {
       if (this.$refs.chatMessages) {
