@@ -219,6 +219,8 @@ export default {
 .carousel-slide {
   padding: 0.5rem;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
 }
 
 .car-card {
@@ -229,12 +231,33 @@ export default {
   overflow: hidden;
   height: 100%;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  max-width: 400px;
 }
 
 @media (min-width: 768px) {
   .car-card {
     min-height: 180px;
     max-height: 350px;
+  }
+}
+
+@media (max-width: 767px) {
+  .carousel-slide {
+    padding: 0.25rem;
+  }
+  
+  .car-card {
+    max-width: 100%;
+  }
+  
+  .carousel-header {
+    margin-bottom: 0.5rem;
+  }
+  
+  .carousel-controls {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 
