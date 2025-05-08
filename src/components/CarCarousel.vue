@@ -105,13 +105,19 @@ export default {
       }
     },
     nextSlide() {
-      if (this.currentIndex < this.cars.length - this.slidesPerView) {
-        this.currentIndex++;
+      const newIndex = this.currentIndex + this.slidesPerView;
+      if (newIndex < this.cars.length) {
+        this.currentIndex = newIndex;
+      } else {
+        this.currentIndex = Math.max(0, this.cars.length - this.slidesPerView);
       }
     },
     prevSlide() {
-      if (this.currentIndex > 0) {
-        this.currentIndex--;
+      const newIndex = this.currentIndex - this.slidesPerView;
+      if (newIndex >= 0) {
+        this.currentIndex = newIndex;
+      } else {
+        this.currentIndex = 0;
       }
     },
     getSourceLabel(url) {
