@@ -423,6 +423,8 @@ export default {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .header {
@@ -433,6 +435,7 @@ export default {
   position: sticky;
   top: 0;
   z-index: 10;
+  width: 100%;
 }
 
 .header-container {
@@ -454,6 +457,21 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.5rem;
+  }
 }
 
 .chat-container {
@@ -463,6 +481,13 @@ export default {
   flex-direction: column;
   background-color: var(--chat-bg);
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    height: calc(100vh - 60px);
+  }
 }
 
 .chat-messages {
@@ -491,6 +516,14 @@ export default {
   display: flex;
   position: relative;
   padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .message {
+    padding: 0 0.5rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .message-avatar {
@@ -546,6 +579,15 @@ export default {
   max-width: calc(100% - 45px);
   width: 100%;
   padding-top: 4px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  .message-content {
+    max-width: calc(100% - 40px);
+  }
 }
 
 .message-text {
@@ -561,6 +603,14 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .chat-input-container {
+    padding: 0.75rem 0.75rem 1rem;
+  }
 }
 
 .input-wrapper {
@@ -573,6 +623,12 @@ export default {
   width: 100%;
   max-width: 768px;
   margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .input-wrapper {
+    border-radius: 0.5rem;
+  }
 }
 
 .chat-input {
@@ -597,6 +653,14 @@ export default {
   font-family: var(--font-sans);
   resize: none;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .chat-input input {
+    padding: 0.75rem 3rem 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+  }
 }
 
 .chat-input input:focus {
@@ -665,6 +729,23 @@ export default {
   padding: 2rem;
   text-align: center;
   color: var(--light-text-color);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .empty-state {
+    padding: 1.5rem 1rem;
+  }
+  
+  .empty-state h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .empty-description {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
 }
 
 .empty-icon {
