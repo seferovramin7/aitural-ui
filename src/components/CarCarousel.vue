@@ -6,7 +6,7 @@
         <button @click="prevSlide" :disabled="currentIndex === 0" class="control-btn">
           ← Əvvəlki
         </button>
-        <span class="pagination">{{ Math.min(currentIndex + 1, cars.length) }} - {{ Math.min(currentIndex + slidesPerView, cars.length) }} / {{ cars.length }}</span>
+        <span class="pagination">{{ currentIndex + 1 }}-{{ Math.min(currentIndex + slidesPerView, cars.length) }} / {{ cars.length }}</span>
         <button @click="nextSlide" :disabled="currentIndex + slidesPerView >= cars.length" class="control-btn">
           Sonraki →
         </button>
@@ -15,7 +15,7 @@
     
     <div class="carousel-container">
       <div class="carousel-track" :style="{ transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)` }">
-        <div v-for="(car, index) in cars" :key="index" class="carousel-slide" :style="{ minWidth: `${100 / slidesPerView}%` }">
+        <div v-for="(car, index) in cars" :key="index" class="carousel-slide" :style="{ flex: `0 0 ${100 / slidesPerView}%` }">
           <div class="car-card">
             <div class="car-image">
               <img v-if="car.image || car.image_url" :src="car.image || car.image_url" :alt="car.title" />
@@ -86,37 +86,44 @@ export default {
   },
   computed: {
     slidesPerView() {
-      // Responsive number of slides based on screen width
-      if (this.windowWidth >= 1200) return 4;      // 4 cars on very wide screens
-      else if (this.windowWidth >= 992) return 3;  // 3 cars on large screens
-      else if (this.windowWidth >= 768) return 2;  // 2 cars on medium screens
-      else return 1;                               // 1 car on mobile
+      if (this.windowWidth >= 1400) {
+        return 4; // 4 cars on extra large screens
+      } else if (this.windowWidth >= 992) {
+        return 3; // 3 cars on large screens
+      } else if (this.windowWidth >= 768) {
+        return 2; // 2 cars on medium screens
+      } else {
+        return 1; // 1 car on small screens
+      }
     }
   },
   mounted() {
-    // Add resize listener to update slidesPerView
     window.addEventListener('resize', this.handleResize);
+    this.handleResize();
   },
   beforeUnmount() {
-    // Remove resize listener
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    nextSlide() {
-      // Move forward by the number of visible slides, but don't exceed the limit
-      const maxIndex = Math.max(0, this.cars.length - this.slidesPerView);
-      this.currentIndex = Math.min(this.currentIndex + this.slidesPerView, maxIndex);
-    },
-    prevSlide() {
-      // Move backward by the number of visible slides
-      this.currentIndex = Math.max(0, this.currentIndex - this.slidesPerView);
-    },
     handleResize() {
       this.windowWidth = window.innerWidth;
       // Adjust current index if needed when resizing
-      const maxIndex = Math.max(0, this.cars.length - this.slidesPerView);
-      if (this.currentIndex > maxIndex) {
-        this.currentIndex = maxIndex;
+      if (this.currentIndex + this.slidesPerView > this.cars.length) {
+        this.currentIndex = Math.max(0, this.cars.length - this.slidesPerView);
+      }
+    },
+    nextSlide() {
+      const nextIndex = this.currentIndex + this.slidesPerView;
+      if (nextIndex < this.cars.length) {
+        this.currentIndex = Math.min(nextIndex, this.cars.length - this.slidesPerView);
+      }
+    },
+    prevSlide() {
+      const prevIndex = this.currentIndex - this.slidesPerView;
+      if (prevIndex >= 0) {
+        this.currentIndex = prevIndex;
+      } else {
+        this.currentIndex = 0;
       }
     },
     getSourceLabel(url) {
@@ -210,8 +217,8 @@ export default {
 }
 
 .carousel-slide {
-  flex: 0 0 auto;
   padding: 0.5rem;
+  box-sizing: border-box;
 }
 
 .car-card {
@@ -226,8 +233,8 @@ export default {
 
 @media (min-width: 768px) {
   .car-card {
-    flex-direction: column;
-    min-height: 300px;
+    min-height: 180px;
+    max-height: 350px;
   }
 }
 
@@ -237,15 +244,6 @@ export default {
   overflow: hidden;
   position: relative;
   background-color: rgba(0, 0, 0, 0.2);
-}
-
-@media (min-width: 768px) {
-  .car-image {
-    width: 100%;
-    height: 140px;
-    border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
 }
 
 .car-image img {
