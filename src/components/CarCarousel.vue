@@ -6,7 +6,7 @@
         <button @click="prevSlide" :disabled="currentIndex === 0" class="control-btn">
           ← Əvvəlki
         </button>
-        <span class="pagination">{{ Math.min(currentIndex + 1, Math.max(1, cars.length - slidesPerView + 1)) }} / {{ Math.max(1, cars.length - slidesPerView + 1) }}</span>
+        <span class="pagination">{{ Math.floor(currentIndex / slidesPerView) + 1 }} / {{ Math.ceil(cars.length / slidesPerView) }}</span>
         <button @click="nextSlide" :disabled="currentIndex >= cars.length - slidesPerView" class="control-btn">
           Sonraki →
         </button>
@@ -86,37 +86,61 @@ export default {
   },
   mounted() {
     this.updateSlidesPerView();
-    window.addEventListener('resize', this.updateSlidesPerView);
+    window.addEventListener('resize', this.handleResize);
   },
   beforeUnmount() {
-    window.removeEventListener('resize', this.updateSlidesPerView);
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
+    handleResize() {
+      // Debounce the resize handler
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = setTimeout(() => {
+        const oldSlidesPerView = this.slidesPerView;
+        this.updateSlidesPerView();
+        
+        // Adjust current index if slidesPerView has changed
+        if (oldSlidesPerView !== this.slidesPerView) {
+          // Ensure we're at a valid position after resize
+          const pageIndex = Math.floor(this.currentIndex / oldSlidesPerView);
+          this.currentIndex = pageIndex * this.slidesPerView;
+          
+          // Make sure we don't go out of bounds
+          if (this.currentIndex > this.cars.length - this.slidesPerView) {
+            this.currentIndex = Math.max(0, this.cars.length - this.slidesPerView);
+          }
+        }
+      }, 150);
+    },
     updateSlidesPerView() {
       const width = window.innerWidth;
-      if (width < 768) {
+      if (width < 600) {
         this.slidesPerView = 1;
-      } else if (width < 1024) {
+      } else if (width < 900) {
         this.slidesPerView = 2;
-      } else if (width < 1280) {
+      } else if (width < 1200) {
         this.slidesPerView = 3;
       } else {
         this.slidesPerView = 4;
       }
     },
     nextSlide() {
+      // Move by the number of slides per view
       const newIndex = this.currentIndex + this.slidesPerView;
       if (newIndex < this.cars.length) {
         this.currentIndex = newIndex;
       } else {
+        // If going to the end, show the last possible batch
         this.currentIndex = Math.max(0, this.cars.length - this.slidesPerView);
       }
     },
     prevSlide() {
+      // Move back by the number of slides per view
       const newIndex = this.currentIndex - this.slidesPerView;
       if (newIndex >= 0) {
         this.currentIndex = newIndex;
       } else {
+        // If going back too far, go to the beginning
         this.currentIndex = 0;
       }
     },
@@ -208,6 +232,7 @@ export default {
   display: flex;
   transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   width: 100%;
+  min-height: 350px;
 }
 
 .carousel-slide {
@@ -217,21 +242,22 @@ export default {
   box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
+/* Responsive breakpoints for slides */
+@media (min-width: 600px) {
   .carousel-slide {
     min-width: 50%;
     flex: 0 0 50%;
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
   .carousel-slide {
     min-width: 33.333%;
     flex: 0 0 33.333%;
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1200px) {
   .carousel-slide {
     min-width: 25%;
     flex: 0 0 25%;
@@ -246,6 +272,12 @@ export default {
   overflow: hidden;
   height: 100%;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.car-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .car-image {
@@ -365,5 +397,26 @@ export default {
   font-size: 0.75rem;
   font-weight: 500;
   margin-left: 0.25rem;
+}
+
+/* Additional responsive adjustments */
+@media (max-width: 480px) {
+  .carousel-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .carousel-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .car-image {
+    height: 120px;
+  }
+  
+  .car-info {
+    max-height: 130px;
+  }
 }
 </style> 
