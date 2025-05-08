@@ -19,7 +19,7 @@
               <div class="empty-icon">
                 <img :src="aituralLogo" alt="AiTural" class="empty-icon-img">
               </div>
-              <h2>Gəlin ehtiyyac və istəklərinizə ən uyğun avtomobili tapaq</h2>
+              <h2>Gəlin ehtiyac və istəklərinizə ən uyğun avtomobili tapaq</h2>
               <p class="empty-description">İstədiyiniz maşın haqqında təsəvvürünüzü yazın və biz sizə ən yaxşı variantları təklif edək.</p>
             </div>
             
@@ -249,7 +249,7 @@ export default {
           
           try {
             // Try with direct URL as fallback
-            const directResponse = await customAxios.post('http://52.90.3.212:8080/api/cars/suggestion', {
+            const directResponse = await customAxios.post('http://localhost:8080/api/cars/suggestion', {
               text: userQuery
             });
             
@@ -281,7 +281,7 @@ export default {
             // Try with native fetch as a last resort
             try {
               console.log('Attempting with native fetch API');
-              const fetchResponse = await fetch('http://52.90.3.212:8080/api/cars/suggestion', {
+              const fetchResponse = await fetch('http://localhost:8080/api/cars/suggestion', {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'omit',

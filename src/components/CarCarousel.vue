@@ -6,15 +6,15 @@
         <button @click="prevSlide" :disabled="currentIndex === 0" class="control-btn">
           ← Əvvəlki
         </button>
-        <span class="pagination">{{ currentIndex + 1 }} / {{ cars.length }}</span>
-        <button @click="nextSlide" :disabled="currentIndex === cars.length - 1" class="control-btn">
+        <span class="pagination">{{ Math.min(currentIndex + 1, Math.max(1, cars.length - slidesPerView + 1)) }} / {{ Math.max(1, cars.length - slidesPerView + 1) }}</span>
+        <button @click="nextSlide" :disabled="currentIndex >= cars.length - slidesPerView" class="control-btn">
           Sonraki →
         </button>
       </div>
     </div>
     
     <div class="carousel-container">
-      <div class="carousel-track" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+      <div class="carousel-track" :style="{ transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)` }">
         <div v-for="(car, index) in cars" :key="index" class="carousel-slide">
           <div class="car-card">
             <div class="car-image">
@@ -80,12 +80,32 @@ export default {
   },
   data() {
     return {
-      currentIndex: 0
+      currentIndex: 0,
+      slidesPerView: 4
     };
   },
+  mounted() {
+    this.updateSlidesPerView();
+    window.addEventListener('resize', this.updateSlidesPerView);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateSlidesPerView);
+  },
   methods: {
+    updateSlidesPerView() {
+      const width = window.innerWidth;
+      if (width < 768) {
+        this.slidesPerView = 1;
+      } else if (width < 1024) {
+        this.slidesPerView = 2;
+      } else if (width < 1280) {
+        this.slidesPerView = 3;
+      } else {
+        this.slidesPerView = 4;
+      }
+    },
     nextSlide() {
-      if (this.currentIndex < this.cars.length - 1) {
+      if (this.currentIndex < this.cars.length - this.slidesPerView) {
         this.currentIndex++;
       }
     },
@@ -187,6 +207,29 @@ export default {
 .carousel-slide {
   min-width: 100%;
   flex: 0 0 100%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .carousel-slide {
+    min-width: 50%;
+    flex: 0 0 50%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .carousel-slide {
+    min-width: 33.333%;
+    flex: 0 0 33.333%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .carousel-slide {
+    min-width: 25%;
+    flex: 0 0 25%;
+  }
 }
 
 .car-card {
@@ -199,29 +242,12 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-@media (min-width: 768px) {
-  .car-card {
-    flex-direction: row;
-    min-height: 180px;
-    max-height: 240px;
-  }
-}
-
 .car-image {
   width: 100%;
   height: 140px;
   overflow: hidden;
   position: relative;
   background-color: rgba(0, 0, 0, 0.2);
-}
-
-@media (min-width: 768px) {
-  .car-image {
-    width: 30%;
-    height: auto;
-    max-height: 240px;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-  }
 }
 
 .car-image img {
@@ -284,6 +310,7 @@ export default {
   margin-bottom: 0.75rem;
   font-size: 0.85rem;
   overflow-y: auto;
+  max-height: 150px;
 }
 
 .info-row {
